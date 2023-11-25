@@ -83,7 +83,7 @@ def fenotype(individual):
 
 if __name__ == "__main__":
     
-    file = "./Self-driving rides/qualification_round_2018.in/a_example.in"
+    file = "./qualification_round_2018.in/a_example.in"
     dm.load(file)
     
     indiv = [1, 2, 2]

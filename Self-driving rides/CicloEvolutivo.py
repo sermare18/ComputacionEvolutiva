@@ -3,6 +3,7 @@ from deap import algorithms
 
 import data_management as dm
 import algorithm_config as ConfiguracionSolucion
+import individual_evaluation as ie
 import matplotlib.pyplot as plt
 import numpy as np 
 
@@ -61,14 +62,17 @@ def realizaEvolucion(stats):
     print(logbook)
 
     # Comprobamos cual es la mejor solucion encontrada por evolucion
+    best_solution = tools.selBest(population,1)[0]
     print("La mejor solucion encontrada es: ")
-    print(tools.selBest(population,1)[0])
+    print(best_solution)
     
-    return logbook
+    return logbook, best_solution
 
 if __name__ == "__main__":
     file = "./qualification_round_2018.in/b_should_be_easy_sp.in"
     dm.load(file)
     stats = configuraEstadisticasEvolucion()
-    log = realizaEvolucion(stats)
+    log, best_solution = realizaEvolucion(stats)
+    print("Fenotipo:")
+    print(ie.fenotype(best_solution)[1])
     visualizaGrafica(log)
