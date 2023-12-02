@@ -69,7 +69,7 @@ def realizaEvolucion(stats):
     return logbook, best_solution
 
 if __name__ == "__main__":
-    file = "./qualification_round_2018.in/b_should_be_easy_sp.in"
+    file = "./qualification_round_2018.in/a_example.in"
     dm.load(file)
     stats = configuraEstadisticasEvolucion()
     log, best_solution = realizaEvolucion(stats)
