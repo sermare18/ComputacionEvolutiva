@@ -10,6 +10,18 @@ import individual_evaluation as so_eval
 toolbox = base.Toolbox()
 logbook = tools.Logbook()
 
+def attr():
+    # Generar un número aleatorio entre 0 y 1
+    r = random.random()
+    # Devolver 0 con una probabilidad del 70%, 1 con una probabilidad del 20% y 2 con una probabilidad del 10%
+    if r < 0.7:
+        return 0
+    elif r < 0.9:
+        return 1
+    else:
+        return 2
+
+
 def configure_solution():
     ''' 
     Se configura el fitness que se va a emplear en los individuos
@@ -24,14 +36,17 @@ def configure_solution():
 
     toolbox = base.Toolbox()
     # Attribute generator
-    toolbox.register("attr", random.randint, 1, 3)
+    # 0 -> En esa celda no se coloca ni router ni backbone
+    # 1 -> En esa celda se coloca un router
+    # 2 -> En esa celda se coloca un cable backbone
+    toolbox.register("attr", attr)
     # Structure initializers
     ''' El individuo se crea como una lista (o repeticion) de "attribute", definido justo antes. Tendrá una longitud igual al numero de celdas en el grid'''
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr, n=gd.num_rows * gd.num_cols)
     ''' La población se crea como una lista de "individual", definido justo antes'''
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     
-    toolbox.register("evaluate", so_eval.fitness)
+    toolbox.register("evaluate", so_eval.evaluar_individuo)
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.2)
 #    toolbox.register("select", tools.selRoulette)
@@ -43,9 +58,9 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 50
+    params['NGEN'] = 10000
     params['PSIZE'] = 50
     params['CXPB'] = 0.8
-    params['MUTPB'] = 0.1
+    params['MUTPB'] = 0.5
     
     return params

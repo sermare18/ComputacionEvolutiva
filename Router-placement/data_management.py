@@ -37,7 +37,7 @@ def load(file):
     
     #%%
     # Crear un diccionario de mapeo para caracteres
-    char_mapping = {'#': 0, '.': 1, '-': 2}
+    char_mapping = {'#': 3, '.': 4, '-': 5}
     
     gd.grid = np.zeros((gd.num_rows, gd.num_cols), dtype=int)
     
@@ -46,7 +46,7 @@ def load(file):
         line = contentLines[n_line + 3].strip()
         for pos, cell in enumerate(line):
             # Asignar el valor correspondiente según el mapeo
-            gd.grid[n_line, pos] = char_mapping.get(cell, 0)
+            gd.grid[n_line, pos] = char_mapping.get(cell, -1)
     print(gd.grid)
     print("Data read correctly")
     
