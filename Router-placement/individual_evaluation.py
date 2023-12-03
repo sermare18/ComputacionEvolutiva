@@ -93,7 +93,7 @@ def hay_pared(r1, c1, r2, c2):
     for x in range(min(r1, r2), max(r1, r2) + 1):
         for y in range(min(c1, c2), max(c1, c2) + 1):
             # Verificar si la celda es una pared
-            if gd.grid[x][y] == '#':
+            if gd.grid[x][y] == 3:
                 return True
 
     return False

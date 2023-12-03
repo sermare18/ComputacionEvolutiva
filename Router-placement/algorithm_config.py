@@ -58,7 +58,7 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 10000
+    params['NGEN'] = 1000
     params['PSIZE'] = 50
     params['CXPB'] = 0.8
     params['MUTPB'] = 0.5
