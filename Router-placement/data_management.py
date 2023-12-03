@@ -47,6 +47,12 @@ def load(file):
         for pos, cell in enumerate(line):
             # Asignar el valor correspondiente según el mapeo
             gd.grid[n_line, pos] = char_mapping.get(cell, -1)
+            if cell == '-':
+                gd.num_celdas_vacias += 1
+            elif cell == '.':
+                gd.num_celdas_objetivo += 1
+            else:
+                gd.num_celdas_pared += 1
     print(gd.grid)
     print("Data read correctly")
     

@@ -9,5 +9,11 @@ budget = 0
 br = 0
 bc = 0
 
+num_celdas_vacias = 0
+num_celdas_objetivo = 0
+num_celdas_pared = 0
+
+contador_routers = 0
+
 # Estructuras intermedias
 grid = [] 

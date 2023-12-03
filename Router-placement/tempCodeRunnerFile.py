@@ -1,1 +1,0 @@
- file = "./Router-placement/qualification_round_2017.in/mini_example.in"

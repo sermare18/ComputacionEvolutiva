@@ -63,16 +63,16 @@ def realizaEvolucion(stats):
 
     # Comprobamos cual es la mejor solucion encontrada por evolucion
     best_solution = tools.selBest(population,1)[0]
-    print("La mejor solucion encontrada es: ")
-    print(best_solution)
+    # print("La mejor solucion encontrada es: ")
+    # print(best_solution)
     
     return logbook, best_solution
 
 if __name__ == "__main__":
-    file = "./Router-placement/qualification_round_2017.in/small_example.in"
+    file = "./Router-placement/qualification_round_2017.in/charleston_road.in"
     dm.load(file)
     stats = configuraEstadisticasEvolucion()
     log, best_solution = realizaEvolucion(stats)
-    # print("Fenotipo:")
-    # print(ie.fenotype(best_solution)[1])
+    ie.fenotype(best_solution)
+    print(log)
     visualizaGrafica(log)

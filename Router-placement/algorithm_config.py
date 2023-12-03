@@ -15,24 +15,28 @@ def attr(index):
     row = index // gd.num_cols
     col = index % gd.num_cols
     
-    if row == gd.br and col == gd.bc:
-        return 2
+    # Calcular el número máximo de routers que se pueden colocar
+    max_routers = int(gd.budget / gd.price_router)
     
+    # Calcular el número máximo de celdas que se pueden cablear
+    max_celdas = gd.num_celdas_objetivo + gd.num_celdas_pared
+    
+    # Calcular el número máximo de routers que se pueden colocar con el presupuesto restante después de cablear todas las celdas
+    routers_restantes = int((gd.budget - max_celdas * gd.price_backbone) / gd.price_router)
+
+    # En la posicion del cable principal no colocamos routers
+    if row == gd.br and col == gd.bc:
+        return 0
+    
+    # En las celdas de pared (#) y celdas vacías (-) no colocamos routers
     if gd.grid[row, col] != 4:
         return 0
     else:
-        # Verificar las celdas vecinas
-        vecinos = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
-        hay_cable_vecino = any((r, c) == (gd.br, gd.bc) for r, c in vecinos if 0 <= r < gd.num_rows and 0 <= c < gd.num_cols)        
-        if not hay_cable_vecino:
-            return 0
-
         # Generar un número aleatorio entre 0 y 1
         r = random.random()
-        # Devolver 2 (cables) con una probabilidad del 60%, 1 (routers) con una probabilidad del 30% y 0 (nada) con una probabilidad del 10%
-        if r < 0.6:
-            return 2
-        elif r < 0.9:
+        # Devolver 1 (router) con una probabilidad del 5%, 0 (nada) con una probabilidad del 95%
+        if r < 0.05 and gd.contador_routers < routers_restantes:
+            gd.contador_routers += 1;
             return 1
         else:
             return 0
@@ -77,7 +81,7 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 100
+    params['NGEN'] = 20
     params['PSIZE'] = 50
     params['CXPB'] = 0.8
     params['MUTPB'] = 0.1
@@ -85,7 +89,7 @@ def configure_param():
     return params
 
 if __name__ == "__main__":
-    file = "./Router-placement/qualification_round_2017.in/mini_example.in"
+    file = "./Router-placement/qualification_round_2017.in/charleston_road.in"
     dm.load(file)
     toolbox = configure_solution()
     params = configure_param()
@@ -99,3 +103,4 @@ if __name__ == "__main__":
     # Imprimir el individuo y su fitness
     print("Individuo:", individual)
     print("Fitness:", fitness)
+    print(gd.contador_routers)

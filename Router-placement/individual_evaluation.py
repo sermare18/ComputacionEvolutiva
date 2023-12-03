@@ -6,22 +6,12 @@ def evaluar_individuo(individual):
     # Convertir el individuo a una matriz 2D para facilitar el manejo
     grid = np.array(individual).reshape(gd.num_rows, gd.num_cols)
     
-    routers_conectados, routers_no_conectados, num_routers, num_fibra = esta_conectado(grid)
-    
-    # Verificar que no se ha puesto ningún router dentro de alguna pared
-    for pos_router in routers_conectados + routers_no_conectados:
-        r, c = pos_router
-        if gd.grid[r][c] == 3:
-            return -np.inf,
-    
-    # Verificar si los routers y cables backbone están correctamente conectados
-    if len(routers_conectados) == 0:
-        return -np.inf,
-
-    num_celdas_cubiertas = 0
-    # Calcular el alcance de cada router bien conectados
-    for pos_router in routers_conectados:
-        num_celdas_cubiertas += calcular_zona_cubierta(pos_router[0], pos_router[1])
+    num_celdas_cubiertas = calcular_cubrimiento_routers(grid)
+    # Conectar los routers con el punto inicial de fibra
+    celdas = conectar_routers(grid)
+    num_routers = len(celdas)
+    celdas_no_repetidas = set(sum(celdas, []))
+    num_fibra = len(celdas_no_repetidas)
 
     fiber_cost = num_fibra * gd.price_backbone
     router_cost = num_routers * gd.price_router
@@ -37,6 +27,44 @@ def evaluar_individuo(individual):
 
     return puntuacion,
 
+def connect_cells(router, cable):
+    x1, y1 = router
+    x2, y2 = cable
+    dx, dy = abs(x1 - x2), abs(y1 - y2)
+    sx, sy = 1 if x1 < x2 else -1, 1 if y1 < y2 else -1
+    err = dx - dy
+    x, y = x1, y1
+    cells = []
+
+    while x != x2 or y != y2:
+        cells.append((x, y))
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x += sx
+        if e2 < dx:
+            err += dx
+            y += sy
+
+    cells.append((x, y)) 
+    
+    return cells
+
+def conectar_routers(grid_individual):
+    celdas_a_conectar = []
+    for r in range(len(grid_individual)):
+        for c in range(len(grid_individual[0])):
+            if grid_individual[r][c] == 1:
+                 celdas_a_conectar.append(connect_cells((r, c), (gd.br, gd.bc)))
+    return celdas_a_conectar
+
+def calcular_cubrimiento_routers(grid_individual):
+    num_celdas_cubiertas = 0
+    for r in range(len(grid_individual)):
+        for c in range(len(grid_individual[0])):
+            if grid_individual[r][c] == 1:
+                 num_celdas_cubiertas += calcular_zona_cubierta(r, c)
+    return num_celdas_cubiertas
 
 def esta_conectado(grid_individual):
     # Crear una matriz para marcar las celdas visitadas
@@ -99,44 +127,41 @@ def hay_pared(r1, c1, r2, c2):
     return False
 
 
-'''
-La función fenotype(individual) toma una lista de enteros individual que representa una solución al problema de asignación de viajes 
-a vehículos. Cada entero en individual representa el vehículo asignado a un viaje específico. 
-El valor 0 significa que el viaje no se atiende.
-EJEMPLO
-El individuo [1, 2, 1] significa que el primer y tercer viaje están asignados al vehículo 1, 
-y el segundo viaje está asignado al vehículo 2. 
-'''
 def fenotype(individual):
-    # Crear una matriz vacía para el fenotipo
-    fenotipo = [[' ' for _ in range(gd.num_cols)] for _ in range(gd.num_rows)]
-    
-    # Recorrer el genotipo
-    for i, gen in enumerate(individual):
-        # Convertir el índice lineal en un índice bidimensional
-        fila = i // gd.num_cols
-        columna = i % gd.num_cols
+    # Convertir el individuo a una matriz 2D
+    grid = np.array(individual).reshape(gd.num_rows, gd.num_cols)
 
-        # Si el gen es 2, hay un cable de fibra óptica en esta celda
-        if gen == 2:
-            fenotipo[fila][columna] = 'C'  # C de Cable
+    # Conectar los routers con el punto inicial de fibra
+    celdas = conectar_routers(grid)
 
-        # Si el gen es 1, hay un router en esta celda
-        elif gen == 1:
-            fenotipo[fila][columna] = 'R'  # R de Router
-
-    # Imprimir el fenotipo
-    for fila in fenotipo:
-        print(' '.join(fila))
-
+    # Escribir el archivo de salida
+    with open('output.txt', 'w') as archivo:
+        archivo.write(f'Número de routers: {len(celdas)}\n\n')
+        archivo.write('En cada fila de a continuación, se representa el cableado de la red.\nLa primera celda es la posicion del router y la última celda es la posición del primer punto de fibra.\n')
+        for i, lista in enumerate(celdas, 1):
+            archivo.write(f'Cableado {i}: {str(lista)}\n')
 
 if __name__ == "__main__":
     
-    file = "./Router-placement/qualification_round_2017.in/mini_example.in"
+    
+    file = "./Router-placement/qualification_round_2017.in/small_example.in"
     dm.load(file)
     
-    indiv = [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    indiv_mini_example = [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    indiv_small_example = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    print('fitness ejemplo',evaluar_individuo(indiv_small_example))
     
-    print('fitness ejemplo',evaluar_individuo(indiv))
     
-    print(fenotype(indiv))
+    '''
+    grid = [
+        [0, 0, 2, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0]
+    ]
+    
+    # print(connect_cells(grid, (3, 5), (0, 2)))
+    print(conectar_routers(grid))
+    '''
