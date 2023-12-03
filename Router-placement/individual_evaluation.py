@@ -106,25 +106,29 @@ El valor 0 significa que el viaje no se atiende.
 EJEMPLO
 El individuo [1, 2, 1] significa que el primer y tercer viaje están asignados al vehículo 1, 
 y el segundo viaje está asignado al vehículo 2. 
-
-def fenotype(individual):
-    # Se considera que el vehículo 0 significa no atender a ese viaje
-    # La posición 0no tendrá por lo tanto asignados nunca ninguno
-    
-    # Inicializa una lista de listas, donde cada lista interna representará los viajes asignados a un vehículo específico. La primera lista interna está vacía porque el vehículo 0 significa que el viaje no se atiende.
-    rides_assigned = [[]]
-    # Inicializa una cadena vacía s que se utilizará para almacenar una descripción textual de las asignaciones de viajes.
-    s = ''
-    
-    for v in range(gd.num_vehic):
-        r_vehic = [i for i, x in enumerate(individual) if x == (v + 1)]
-        r_vehic = order_by_start(r_vehic)
-        rides_assigned.append(r_vehic)
-        
-        s = s + "Vehicle {} has assigned rides: {}\n".format((v+1),str(r_vehic))
-        
-    return rides_assigned, s
 '''
+def fenotype(individual):
+    # Crear una matriz vacía para el fenotipo
+    fenotipo = [[' ' for _ in range(gd.num_cols)] for _ in range(gd.num_rows)]
+    
+    # Recorrer el genotipo
+    for i, gen in enumerate(individual):
+        # Convertir el índice lineal en un índice bidimensional
+        fila = i // gd.num_cols
+        columna = i % gd.num_cols
+
+        # Si el gen es 2, hay un cable de fibra óptica en esta celda
+        if gen == 2:
+            fenotipo[fila][columna] = 'C'  # C de Cable
+
+        # Si el gen es 1, hay un router en esta celda
+        elif gen == 1:
+            fenotipo[fila][columna] = 'R'  # R de Router
+
+    # Imprimir el fenotipo
+    for fila in fenotipo:
+        print(' '.join(fila))
+
 
 if __name__ == "__main__":
     
@@ -134,3 +138,5 @@ if __name__ == "__main__":
     indiv = [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     
     print('fitness ejemplo',evaluar_individuo(indiv))
+    
+    print(fenotype(indiv))

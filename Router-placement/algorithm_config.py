@@ -6,21 +6,40 @@ from deap import tools
 
 import global_def as gd
 import individual_evaluation as so_eval
+import data_management as dm
 
 toolbox = base.Toolbox()
 logbook = tools.Logbook()
 
-def attr():
-    # Generar un número aleatorio entre 0 y 1
-    r = random.random()
-    # Devolver 0 con una probabilidad del 70%, 1 con una probabilidad del 20% y 2 con una probabilidad del 10%
-    if r < 0.7:
-        return 0
-    elif r < 0.9:
-        return 1
-    else:
+def attr(index):
+    row = index // gd.num_cols
+    col = index % gd.num_cols
+    
+    if row == gd.br and col == gd.bc:
         return 2
+    
+    if gd.grid[row, col] != 4:
+        return 0
+    else:
+        # Verificar las celdas vecinas
+        vecinos = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+        hay_cable_vecino = any((r, c) == (gd.br, gd.bc) for r, c in vecinos if 0 <= r < gd.num_rows and 0 <= c < gd.num_cols)        
+        if not hay_cable_vecino:
+            return 0
 
+        # Generar un número aleatorio entre 0 y 1
+        r = random.random()
+        # Devolver 2 (cables) con una probabilidad del 60%, 1 (routers) con una probabilidad del 30% y 0 (nada) con una probabilidad del 10%
+        if r < 0.6:
+            return 2
+        elif r < 0.9:
+            return 1
+        else:
+            return 0
+
+
+def attr_generator():
+    return (attr(i) for i in range(gd.num_rows * gd.num_cols))
 
 def configure_solution():
     ''' 
@@ -39,10 +58,10 @@ def configure_solution():
     # 0 -> En esa celda no se coloca ni router ni backbone
     # 1 -> En esa celda se coloca un router
     # 2 -> En esa celda se coloca un cable backbone
-    toolbox.register("attr", attr)
+    toolbox.register("attr_generator", attr_generator)
     # Structure initializers
     ''' El individuo se crea como una lista (o repeticion) de "attribute", definido justo antes. Tendrá una longitud igual al numero de celdas en el grid'''
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr, n=gd.num_rows * gd.num_cols)
+    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.attr_generator)
     ''' La población se crea como una lista de "individual", definido justo antes'''
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     
@@ -58,9 +77,25 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 1000
+    params['NGEN'] = 100
     params['PSIZE'] = 50
     params['CXPB'] = 0.8
-    params['MUTPB'] = 0.5
+    params['MUTPB'] = 0.1
     
     return params
+
+if __name__ == "__main__":
+    file = "./Router-placement/qualification_round_2017.in/mini_example.in"
+    dm.load(file)
+    toolbox = configure_solution()
+    params = configure_param()
+    
+    # Generar un individuo
+    individual = toolbox.individual()
+
+    # Evaluar el fitness del individuo
+    fitness = toolbox.evaluate(individual)
+
+    # Imprimir el individuo y su fitness
+    print("Individuo:", individual)
+    print("Fitness:", fitness)

@@ -69,7 +69,7 @@ def realizaEvolucion(stats):
     return logbook, best_solution
 
 if __name__ == "__main__":
-    file = "./Router-placement/qualification_round_2017.in/mini_example.in"
+    file = "./Router-placement/qualification_round_2017.in/small_example.in"
     dm.load(file)
     stats = configuraEstadisticasEvolucion()
     log, best_solution = realizaEvolucion(stats)
