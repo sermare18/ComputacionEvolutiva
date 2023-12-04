@@ -69,10 +69,9 @@ def realizaEvolucion(stats):
     return logbook, best_solution
 
 if __name__ == "__main__":
-    file = "./Router-placement/qualification_round_2017.in/charleston_road.in"
+    file = "./Router-placement/qualification_round_2017.in/opera.in"
     dm.load(file)
     stats = configuraEstadisticasEvolucion()
     log, best_solution = realizaEvolucion(stats)
     ie.fenotype(best_solution)
-    print(log)
     visualizaGrafica(log)

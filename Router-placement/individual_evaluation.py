@@ -13,6 +13,13 @@ def evaluar_individuo(individual):
     celdas_no_repetidas = set(sum(celdas, []))
     num_fibra = len(celdas_no_repetidas)
 
+    # print("\n")
+    # print(f'El número total de elementos en la lista "celdas" es: {sum(len(sublista) for sublista in celdas)}')
+    # print("Celdas no repetidas: ", len(celdas_no_repetidas))
+    # print(celdas)
+    # print("-------------------------------------------")
+    # print(celdas_no_repetidas)
+    
     fiber_cost = num_fibra * gd.price_backbone
     router_cost = num_routers * gd.price_router
     # Calcular el costo total de los routers y cables backbone colocados
@@ -133,10 +140,13 @@ def fenotype(individual):
 
     # Conectar los routers con el punto inicial de fibra
     celdas = conectar_routers(grid)
+    
+    celdas_no_repetidas = set(sum(celdas, []))
 
     # Escribir el archivo de salida
     with open('output.txt', 'w') as archivo:
-        archivo.write(f'Número de routers: {len(celdas)}\n\n')
+        archivo.write(f'Número de routers: {len(celdas)}\n')
+        archivo.write(f'Número de fibra: {len(celdas_no_repetidas)}\n\n')
         archivo.write('En cada fila de a continuación, se representa el cableado de la red.\nLa primera celda es la posicion del router y la última celda es la posición del primer punto de fibra.\n')
         for i, lista in enumerate(celdas, 1):
             archivo.write(f'Cableado {i}: {str(lista)}\n')
@@ -149,19 +159,5 @@ if __name__ == "__main__":
     
     indiv_mini_example = [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     indiv_small_example = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    
     print('fitness ejemplo',evaluar_individuo(indiv_small_example))
-    
-    
-    '''
-    grid = [
-        [0, 0, 2, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0],
-        [1, 0, 0, 0, 0, 0]
-    ]
-    
-    # print(connect_cells(grid, (3, 5), (0, 2)))
-    print(conectar_routers(grid))
-    '''
